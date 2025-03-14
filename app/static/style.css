@@ -1,0 +1,351 @@
+html, body {
+	background-color: var(--bs-gray-100) !important;
+	height: 100%;
+}
+
+.source-card {
+	max-width: 600px;
+	margin: 50px auto;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.label {
+	font-size: 0.9rem;
+	cursor: pointer;
+}
+
+.label:hover {
+	opacity: 0.8;
+}
+
+.avatar {
+    border-radius: 50%;  /* Makes the image circular */
+    object-fit: cover;  /* Ensures it fills the container */
+    border: 3px solid #ccc;  /* Optional border */
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);  /* Optional shadow */
+}
+
+h3 {
+    background-color: var(--bs-gray-200)!important;
+}
+
+.btn {
+    margin: 2px;
+}
+
+.btn-outline-secondary {
+    --bs-btn-hover-bg: #eee;
+}
+
+.sidebar {
+	width: 250px;
+	height: 100vh;
+	position: fixed;
+	left: 0;
+	top: 0;
+	background-color: var(--bs-gray-800);
+	padding-top: 8px;
+	transition: width 0.3s ease, opacity 0.3s ease;
+	overflow: hidden;
+	white-space: nowrap;
+	display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebar ul {
+	margin-top: 0px;
+	list-style: none;
+	padding: 0;
+	margin-left: 50px;
+}
+
+.sidebar .bottom {
+    margin-bottom: 5px;
+    margin-top: auto;
+}
+
+.sidebar ul li {
+    padding: 15px 10px !important; /* Ensures spacing */
+}
+
+.sidebar .bottom li {
+    padding: 15px 10px !important; /* Ensures spacing */
+}
+
+.sidebar ul li a {
+	text-decoration: none;
+	color: white !important;
+	display: block;
+	transition: transform 0.3s ease;
+}
+
+.sidebar ul li a:hover {
+	background-color: var(--bs-gray-600);
+	border-radius: 5px;
+}
+
+/* Content Styling */
+.content {
+	margin-left: 250px;
+	padding: 20px;
+	flex-grow: 1;
+	transition: margin-left 0.3s ease;
+
+	display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+}
+
+/* Hide Sidebar - Adjust width instead of full hiding */
+.sidebar.collapsed {
+	width: 65px;
+}
+
+.sidebar.collapsed ul li * {
+	transform: translateX(-100%);
+	opacity: 0;
+	transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Toggle Button */
+.toggle-container {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Space between buttons */
+    z-index: 1000;
+}
+
+.toggle-container-bottom {
+    position: fixed;
+    bottom: 10px; /* Align to bottom */
+    left: 10px; /* Keep near the left side */
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Space between buttons */
+    z-index: 1000;
+}
+
+.toggle-btn {
+    background-color: var(--bs-gray-800);
+    color: white;
+    border: none;
+    width: 44px; /* Adjust as needed */
+    height: 44px; /* Adjust as needed */
+    padding: 0 0;
+    rotate: 180deg;
+    cursor: pointer;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+img.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fills the button */
+    border-radius: 50%;
+}
+
+.toggle-btn:hover {
+	background-color: var(--bs-gray-600);
+}
+
+/* Rotate button on click */
+.collapsed .toggle-btn {
+    transform: rotate(180deg);
+}
+
+.toggle-btn-static {
+    rotate: 0deg !important;
+}
+.collapsed .toggle-btn-static {
+    transform: rotate(0deg)!important;
+}
+
+/* Adjust content when sidebar is collapsed */
+.collapsed+.content {
+	margin-left: 60px;
+}
+
+main {
+    flex-grow: 1; /* Makes the main content expand */
+    display: flex; /* Optional: Enables centering */
+    flex-direction: column;
+}
+
+.logo {
+    font-weight: bold;
+    margin-left: 29px;
+    background: linear-gradient(45deg, #fff, var(--bs-gray-200));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Form */
+        /* General styles */
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            margin: auto;
+            max-width: 800px;
+        }
+
+        /* Form styles */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        input, select {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        input:focus, select:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .form-container {
+                width: 90%;
+            }
+        }
+
+.side-selection {
+    padding: 0px;
+    margin: 0;
+    margin-left: -4px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: #fff;
+    background-color: var(--bs-gray-800);
+    border-color: var(--bs-gray-800);
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.side-selection:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ensures all cards have equal height */
+}
+
+.card-body {
+    flex-grow: 1; /* Makes content expand evenly */
+}
+
+p {
+    margin: 0;
+}
+
+.bg-gray {
+    background-color: var(--bs-gray-200);
+}
+
+blockquote {
+    margin: 0;
+}
+
+/* Copy clipboard */
+.copy-btn {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align text to the left */
+            border-top: 2px solid var(--bs-gray-600); /* Top border */
+            border-bottom: 2px solid var(--bs-gray-600); /* Bottom border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 10px 15px; /* Add padding for better spacing */
+            font-weight: bold; /* Make text bold */
+            background-color: white; /* Light background */
+            color: gray; /* Text color */
+            border-radius: 0;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--bs-gray-200); /* Slightly darker on hover */
+            color: black;
+        }
+
+        .copy-btn .icon {
+            margin-right: 8px; /* Add spacing between icon and text */
+        }
+
+
+/* Form group */
+.form-group {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between elements */
+    }
+
+    .form-group input,
+    .form-group select {
+        flex: 1; /* Make inputs take equal space */
+    }
+
+    .form-group .small-input {
+        width: 80px; /* Smaller width for page input */
+    }
+
+    .textarea-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .textarea-container textarea {
+        flex: 1; /* Expand to fill available space */
+    }
+
+textarea {
+    height: 120px; /* Adjust as needed */
+    resize: vertical; /* Allow users to resize if needed */
+    width: 100%; /* Ensure it takes full width */
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}

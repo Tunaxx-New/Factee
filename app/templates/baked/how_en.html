@@ -1,0 +1,146 @@
+{% extends 'index.html' %}
+
+{% block title %}How to{% endblock %}
+
+{% block content %}
+
+<!-- Fixed Panel -->
+<div class="fixed-panel">
+    <p><i class="fa-solid fa-language"></i> Warning, current page is translated with AI! <i class="fa-solid fa-robot"></i></p>
+</div>
+
+<div class="content-box">
+    <h1 id="definitions">Definitions</h1>
+
+    <h2>Factee</h2>
+    <p>A non-social knowledge network. Every user is a mediator.</p><br>
+
+    <h2>Mediator</h2>
+    <p>The mediator connects original articles and texts with their reworked facts. The mediator is only responsible for referencing and paraphrasing methods, not for the content itself.</p>
+    <br>
+
+    <h2><i class="fa-solid fa-lightbulb"></i> Fact</h2>
+    <p>Information that has been paraphrased and processed by the mediator based on a source. A fact is directly linked to its source. Each fact belongs to a single mediator and inherits the type of its source.</p><br>
+
+    <h2><i class="fa-solid fa-file"></i> Source</h2>
+    <p>The original text written by another author. Sources do not belong to users and are edited by the site.</p>
+
+    <hr>
+
+    <h1 id="badges">Ratings</h1>
+    <p></p>
+
+    <h2 style="color: {{labels[0].color}}; background-color: color-mix(in srgb, {{labels[0].color}} 10%, #fefefe)!important;">{{labels[0].icon | safe}} {{ _words[labels[0].name] or labels[0].name }}</h2>
+    <h2 style="color: {{labels[1].color}}; background-color: color-mix(in srgb, {{labels[1].color}} 10%, #fefefe)!important;">{{labels[1].icon | safe}} {{ _words[labels[1].name] or labels[1].name }}</h2>
+    <p>Reflects your emotional assessment. It may indicate the depth of the fact or an arbitrary rating.</p>
+    <br>
+
+    <h2 style="color: {{labels[2].color}}; background-color: color-mix(in srgb, {{labels[2].color}} 10%, #fefefe)!important;">{{labels[2].icon | safe}} {{ _words[labels[2].name] or labels[2].name }}</h2>
+    <h2 style="color: {{labels[3].color}}; background-color: color-mix(in srgb, {{labels[3].color}} 10%, #fefefe)!important;">{{labels[3].icon | safe}} {{ _words[labels[3].name] or labels[3].name }}</h2>
+    <p>This rating indicates how well the mediator has linked the fact to the source, including the correctness of paraphrasing, citations, context, and references.</p><br>
+
+    <h2 style="color: {{labels[4].color}}; background-color: color-mix(in srgb, {{labels[4].color}} 10%, #fefefe)!important;">{{labels[4].icon | safe}} {{ _words[labels[4].name] or labels[4].name }}</h2>
+    <h2 style="color: {{labels[5].color}}; background-color: color-mix(in srgb, {{labels[5].color}} 10%, #fefefe)!important;">{{labels[5].icon | safe}} {{ _words[labels[5].name] or labels[5].name }}</h2>
+    <p>This rating assesses the accessibility of the source(s), including how easy it is to find and read them.</p>
+
+    <hr>
+
+    <h1 id="criteria">Source Criteria</h1>
+        <h2>Types</h2>
+        <h3 style="color: {{types[0].color}}; background-color: color-mix(in srgb, {{types[0].color}} 10%, #fefefe)!important;">{{ _words[types[0].name] or types[0].name }}</h3>
+        <p>Everyday knowledge covers a broad range of online information. It does not fit into other source categories and is characterized by authority from the original source, fragmentation, incomplete reliability, locality, and flexibility.</p><br>
+
+        <h3 style="color: {{types[1].color}}; background-color: color-mix(in srgb, {{types[1].color}} 10%, #fefefe)!important;">{{ _words[types[1].name] or types[1].name }}</h3>
+        <p>Mystical knowledge is defined by personal authority, subjectivity, non-verbal nature, esotericism, intuition, and emotionality.</p><br>
+
+        <h3 style="color: {{types[2].color}}; background-color: color-mix(in srgb, {{types[2].color}} 10%, #fefefe)!important;">{{ _words[types[2].name] or types[2].name }}</h3>
+        <p>Religious knowledge is based on religious authority, transcendence, and irrationality.</p><br>
+
+        <h3 style="color: {{types[3].color}}; background-color: color-mix(in srgb, {{types[3].color}} 10%, #fefefe)!important;">{{ _words[types[3].name] or types[3].name }}</h3>
+        <p>Scientific knowledge is characterized by publication authority, objectivity, reproducibility, systematic nature, provability, falsifiability, rationality, and accuracy.</p><br>
+
+        <h2>Author, Year, and Title</h2>
+        <p>These are typically provided by an authoritative source or historical context.</p>
+    <hr>
+
+    <h1 id="responsibilities">Responsibilities</h1>
+
+    <h2>Mediator</h2>
+    <p>Mediators may use site features to connect facts but must not intentionally harm the site or its users.
+        The site strongly recommends considering your privacy when filling in profile data, such as email, name, and username.
+        Unsubscribed mediators have a limited number of facts they can create, while a subscription increases this limit.</p><br>
+
+    <h2>Site</h2>
+    <ul>
+    <li>The site has the right to modify source data but not facts. Sources are edited according to the established criteria.</li>
+    <li>The site does not verify user identities. Authentication via third-party software (Keycloak) only confirms email addresses per their documentation.
+    Beware of unauthorized email addresses during verification; the official site email is listed at the bottom of the page.</li>
+    <li>The site is not responsible for links to articles attached by mediators.</li>
+    <li>Deleted facts or sources retain a minimized version in their link parameters, but this can be modified by anyone when shared.</li>
+    <li>The site strives to follow APA citation norms.</li>
+    </ul>
+
+    <h2>Host</h2>
+    <p>The site host is responsible for infrastructure below the application level.</p>
+
+    <hr>
+
+    <h1 id="how_to_fact">Writing a <a href="#definitions">Fact</a></h1>
+    <h2>Title</h2>
+    <p>A paraphrased and condensed version of the source text. More general terms and deviation from the source's wording reduce dependence on the source, increasing cognitive bias.</p><br>
+
+    <h2>Context</h2>
+    <p>Allows for a more detailed explanation of the fact, incorporating the mediator's perspective.</p><br>
+
+    <h2>Source</h2>
+    <p>The reference from which the information is cited or interpreted more freely.</p><br>
+
+    <h2>Quote</h2>
+    <p>A verbatim excerpt from the source that facilitates information retrieval.</p><br>
+
+    <h2>Page</h2>
+    <p>The specific page of the source used for paraphrasing and quoting, aiding in source verification.</p><br>
+
+    <hr>
+
+    <h1 id="how_to_source">Adding a <a href="#definitions">Source</a></h1>
+    <p>Fields may be reformatted by the <a href="#responsibilities">site</a>.</p><br>
+    <h2>Title</h2>
+    <p>The name of the source provided by the author.</p><br>
+
+    <h2>Author</h2>
+    <p>The name of the author(s).</p><br>
+
+    <h2>Year</h2>
+    <p>The year of publication or reissue by the author(s) or journal.</p><br>
+
+    <h2><a href="#criteria">Type of Knowledge Source</a></h2>
+
+    <h2>Link</h2>
+    <p>A link to the digital resource of the source.</p>
+
+</div>
+
+<style>
+/* Styling for Fixed Panel */
+    .fixed-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ffecb5;
+        color: black;
+        padding: 10px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        z-index: 10;
+    }
+    .content-box {
+        padding: 16px;
+        width: 66.66%; /* 2/3 of the parent */
+        border-right: 1px solid gray;
+    }
+</style>
+
+{% endblock %}

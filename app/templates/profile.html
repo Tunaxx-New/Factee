@@ -1,0 +1,176 @@
+{% extends 'index.html' %}
+
+{% block title %}Source Details{% endblock %}
+
+{% block content %}
+
+    <div class="container card shadow-lg p-3 mb-5 bg-light rounded">
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-md-6 text-end" style="width: 64px; height: 64px; padding: 0 0;">
+                    <img class="avatar w-16 h-16" src="{{ url_for('image.getAvatar', username=user.username) }}" alt="{{ _words['user_avatar'] }}">
+                </div>
+                <div class="col-md-6 d-flex flex-column justify-content-center">
+                    <h2 class="card-title" style="margin-bottom: 0;">{{ user.username }}</h2>
+                    <h6 style="margin-bottom: 0;"><span class="badge text-white px-2 py-1 rounded" style="background-color: {{ prefer_type.color }};">{{ prefer_type.name }} {{ _words['mediator'] }}</span> <a href="{{redirect_manage_profile}}">{{ _words['account_console'] if not isSideProfile }}</i></a></h6>
+                </div>
+            </div>
+
+            <hr>
+            <h3>{{ _words['user_info'] }}</h3>
+            <p><strong>{{ _words['name'] }}:</strong> {{ user.name }}</p>
+            <p><strong>{{ _words['username'] }}:</strong> {{ user.username }}</p>
+            <p><strong>{{ _words['email'] }}:</strong> {{ user.email }}
+                {% if user.email_verified or user.emailVerified %}
+                    <span class="badge bg-success">{{ _words['verified'] }}</span>
+                {% else %}
+                    <span class="badge bg-danger">{{ _words['not_verified'] }}</span>
+                {% endif %}
+            </p>
+            {% if user.get('realm_access', None) %}
+            <p><strong>{{ _words['roles'] }}:</strong>
+                <ul>
+                    {% for role in user.realm_access.roles %}
+                        <li>{{ role }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+
+            <p><strong>{{ _words['permissions'] }}:</strong>
+                <ul>
+                    {% for permission in user.resource_access.get('account', {}).get('roles', []) %}
+                        <li>{{ permission }}</li>
+                    {% endfor %}
+                </ul>
+            </p>
+            {% endif %}
+
+            <p><strong>{{ _words['status'] }}:</strong>
+                {% if user.enabled %}
+                    <span class="badge bg-success">{{ _words['active'] }}</span>
+                {% else %}
+                    <span class="badge bg-danger">{{ _words['inactive'] }}</span>
+                {% endif %}
+            </p>
+            <p><strong>{{ _words['created_at'] }}:</strong> {{ user.createdTimestamp | datetime_format }}</p>
+
+            <hr>
+
+            {% if patreon.get('data', None) %}
+            <div class="card shadow-lg text-center" style="width: 24rem;">
+                <img src="{{ patreon['data']['attributes']['thumb_url'] }}"
+                     class="card-img-top rounded-circle mx-auto mt-3"
+                     style="width: 120px; height: 120px; object-fit: cover; border: 4px solid;"
+                     alt="Patreon Avatar">
+                <div class="card-body">
+                    <h4 class="card-title fw-bold">{{ patreon['data']['attributes']['full_name'] }}</h4>
+                    <p class="text-muted">Patreon ID: <span class="fw-semibold">{{ patreon['data']['id'] }}</span></p>
+                    <p class="badge bg-secondary">{{ patreon['data']['type'] | capitalize }}</p>
+                    <a href="{{ patreon['links']['self'] }}" class="btn btn-primary" style="color: black!important;">
+                        <i class="fab fa-patreon"></i> View Profile
+                    </a>
+                </div>
+            </div>
+            {% else %}
+                <div class="text-center mb-4">
+                        <a href="{{ url_for('patreon_authentication.login') }}"
+                           class="btn fw-bold px-4 py-2 shadow-lg"
+                           style="color: black!important;">
+                            <i class="fa-brands fa-patreon me-2"></i>Patreon
+                        </a>
+                    </div>
+            {% endif %}
+
+            <hr>
+                <!-- Reaction Buttons -->
+            <h3>{{ _words['total_labels_on_facts'] }}</h3>
+            <div class="d-flex gap-2 mb-3">
+                {% for label in labels %}
+                    <span class="badge bg-light" style="color: #666;" data-bs-toggle="tooltip" title="{{ label.name }}">
+                        {{label.get('icon', label.get('name')) | safe}} {{ label.get('reaction_count') }}
+                    </span>
+                {% endfor %}
+            </div>
+            <hr>
+            <table class="table table-striped table-hover table-bordered table-responsive">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Source</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fact in facts %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('web.factsView', _id=fact._id) }}" class="text-decoration-none fw-bold">
+                                {{ fact.title }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if fact.source_info %}
+                                <a href="{{ url_for('web.sourcesView', _id=fact.source_info[0]._id) }}" class="">
+                                    ({{ fact.source_info[0].author if fact.source_info[0].author else "N/A" }},
+                                    {{ fact.source_info[0].year if fact.source_info[0].year else "N/A" }},
+                                    "{{ fact.source_info[0].title if fact.source_info[0].title else "Unknown" }}")
+                                </a>
+                            {% else %}
+                                <span class="text-muted">No source available</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if fact.source_info and fact.source_info[0].type_info %}
+                                <span class="badge text-white" style="background-color: {{ fact.source_info[0].type_info[0].color }};">
+                                    {{ fact.source_info[0].type_info[0].name }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h3>{{ _words['developer_info'] }}</h3>
+            <p><strong>Client ID:</strong> {{ user.client_id }}</p>
+            <p><strong>Issuer:</strong> <a href="{{ user.iss }}" target="_blank">Keycloak Realm</a></p>
+            <p><strong>Token Type:</strong> {{ user.token_type }}</p>
+            <p><strong>Scope:</strong> {{ user.scope }}</p>
+            <p><strong>Subject (sub):</strong> {{ user.id }}</p>
+
+            <p><strong>TOTP (2FA):</strong> {{ "Enabled" if user.totp else "Disabled" }}</p>
+            <p><strong>Not Before:</strong> {{ user.notBefore }}</p>
+
+            <p><strong>Disableable Credential Types:</strong>
+                {% if user.disableableCredentialTypes %}
+                    <ul>
+                        {% for credential in user.disableableCredentialTypes %}
+                            <li>{{ credential }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    None
+                {% endif %}
+            </p>
+
+            <p><strong>Required Actions:</strong>
+                {% if user.requiredActions %}
+                    <ul>
+                        {% for action in user.requiredActions %}
+                            <li>{{ action }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    None
+                {% endif %}
+            </p>
+
+        </div>
+
+    </div>
+{% endblock %}

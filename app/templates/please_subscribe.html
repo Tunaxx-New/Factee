@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% block title %}{{ _words['logo'] }}: {{ _words['baked'] }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="card source-card">
+        <div class="pt-4 mb-4">
+            <h1 class="p-4"><i class="fa-solid fa-triangle-exclamation me-2"></i></h1>
+            <h3 class="p-4 m-0" style="background-color: var(--bs-warning-border-subtle)!important;">{{ text }}</h3>
+        </div>
+
+        <div class="text-center mb-4">
+            <a href="{{ url_for('patreon_authentication.login') }}"
+               class="btn btn-primary fw-bold px-4 py-2 shadow-lg"
+               style="color: black!important;">
+                <i class="fa-brands fa-patreon me-2"></i>Patreon
+            </a>
+        </div>
+    </div>
+    </div>
+</div>
+
+{% endblock %}

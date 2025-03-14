@@ -1,0 +1,77 @@
+{% extends 'index.html' %}
+
+{% block title %}{{ _words['logo'] }}: {{ _words['source'] }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="card source-card d-flex flex-column flex-grow-1">
+        <div class="p-4">
+        <h3 class="text-primary">{{ source.title }}</h3>
+        <p class="text-muted"><strong>{{ source.author }}</strong>  ({{ source.year }})</p>
+            <a href="{{ url_for('web.onRedirect', redirect=source.link) }}">Visit Example</a>
+        </div>
+
+        <button class="btn copy-btn m-0 p-4" onclick="copyToClipboard('{{ _host }}/sources?_id={{ source._id }}&baked=({{ source.author }}, {{ source.year }}, {{ source.title }})', this)">
+            <span class="icon"><i class="fa-solid fa-copy"></i></span><p>Copy</p>
+        </button>
+
+        <div class="p-4">
+        <div class="mt-auto mt-3">
+        <p class="card-text text-muted small"><strong>{{ _words['created_at'] }}:</strong> {{ source.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+
+        <!-- Reaction Buttons -->
+        <div class="d-flex gap-2 mt-1">
+            {% for label in labels %}
+            {% set source_label = source.labels | selectattr("label_id", "equalto", label._id) | list %}
+            {% set users = source_label[0].users if source_label and source_label[0].users is not none else [] %}
+            {% set is_active = self_user_id in users %}
+            {% set span_color = label.color %}
+                <span class="btn btn-outline-secondary btn-sm" style="color: {{span_color}}; border-color: {{span_color}}" data-bs-toggle="tooltip" title="{{ label.name }}" onclick="sendReaction('{{ source._id }}', 'sources', '{{label.name}}')">
+                    {{label.get('icon', label.get('name')) | safe}} {{ users | length }}
+                </span>
+            {% endfor %}
+        </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for handling reactions -->
+<script>
+    function sendReaction(sourceId, collection, label) {
+        fetch('{{ url_for('database.react') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "_id": sourceId,
+                "_collection": collection,
+                "_label": label
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data['message']) {
+                alert(data['message'])
+                alert('Relogin');
+            }
+            window.location.reload();
+        })
+        .catch(error => {
+            console.log(error);
+            alert('Relogin');
+        });
+    }
+
+    function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(function() {
+                button.getElementsByTagName('p')[0].innerHTML = '{{ _words['copied'] }}';
+            }).catch(function(error) {
+                console.error("Copy failed", error);
+            });
+        }
+</script>
+
+{% endblock %}

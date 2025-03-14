@@ -1,0 +1,73 @@
+{% extends 'index.html' %}
+
+{% block title %}Create Company{% endblock %}
+
+{% block content %}
+
+{% if authentication and AUTHENTICATED_ROLE in authentication.realm_access.roles %}
+
+<div class="form-container">
+    <form action="{{ url_for('database.createSource') }}" method="POST">
+        <div>
+            <h1 style="display: inline;">{{ _words['create_a_new'].replace('*', _words['source'].title()) }}</h1>
+            <a href="{{ url_for('web.howTo') }}#how_to_source" title="{{ _words['how_to_create'].replace('*', _words['fact']) }}" style="display: inline-block; color: black!important;"><h4><i class="fa-solid fa-circle-question"></i></h4></a>
+        </div>
+        <label for="title">{{ _words['title'] }}</label>
+        <textarea maxlength="512" id="title" name="title" required oninput="updatePreview()"></textarea><br>
+
+        <label for="author">{{ _words['author'] }}</label>
+        <textarea maxlength="512" type="text" id="author" name="author" required oninput="updatePreview()"></textarea><br>
+
+        <label for="year">{{ _words['year'] }}</label>
+        <input class="small-input" type="number" id="year" name="year" required oninput="updatePreview()"><br>
+
+        <label for="_type_id">{{ _words['type'] }}</label>
+        <select id="_type_id" name="_type_id" required onchange="updateSelectColor(this)" style="font-weight: bold; color: black;">
+            <option value="">{{ _words['select_a_knowledge_type'] }}</option>
+            {% for _type in types %}
+                <option style="background-color: {{ _type.color }}; font-weight: bold; color: white;" value="{{ _type._id }}" data-color="{{ _type.color }}">{{ _type.name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="link">{{ _words['source_link'] }}</label>
+        <input maxlength="512" type="url" id="link" name="link" placeholder="https://example.pdf"><br>
+
+        <!-- Preview -->
+        <div id="preview" style="padding:16px; margin-top:16px; margin-bottom: 16px; background-color: var(--bs-gray-200);">📖 <span id="previewText">---</span></div>
+
+        <input type="submit" value="Create Source">
+    </form>
+</div>
+
+<script>
+    function updatePreview() {
+            let title = document.getElementById("title").value || "";
+            let author = document.getElementById("author").value || "";
+            let year = document.getElementById("year").value || "";
+
+            let previewText = author
+                ? `(${author}, ${year}, ${title})`
+                : "---";
+
+            document.getElementById("previewText").textContent = previewText;
+        }
+
+    function updateSelectColor(select) {
+        var selectedOption = select.options[select.selectedIndex];
+        var color = selectedOption.getAttribute("data-color") || "white";
+        select.style.backgroundColor = color;
+        if (color !== 'white') {
+            select.style.color = 'white';
+        } else {
+            select.style.color = 'black';
+        }
+    }
+</script>
+
+{% else %}
+
+    <h1>{{ _words['you_are_not_authenticated'] }}</h1>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends 'index.html' %}
+
+{% block title %}{{ _words['logo'] }}: {{ title }}{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-3">{{ title }}</h2>
+
+<!-- Filter Form -->
+    <div class="mb-3">
+        <div class="row g-2">
+
+            <div class="col-md-3">
+            {% if redirect == 'web.factsView' %}
+                <input type="text" id="username" class="form-control" placeholder="{{ _words['username'] }}" value="{{ request.args.get('username', '') }}">
+            {% else %}
+                <input type="text" id="author" class="form-control" placeholder="{{ _words['author'] }}" value="{{ request.args.get('username', '') }}">
+            {% endif %}
+             </div>
+
+            <div class="col-md-3">
+                <input type="text" id="title" class="form-control" placeholder="{{ _words['title'] }}" value="{{ request.args.get('title', '') }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" id="year" class="form-control" placeholder="{{ _words['year'] }}" value="{{ request.args.get('year', '') }}">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100 m-0" style="margin-top: 5px!important;" onclick="applyFilters()">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+
+<!-- Cards -->
+<div class="row">
+    {% for card in cards %}
+    <div class="col-md-4 mb-3">
+        <a href="{{ url_for(redirect, _id=card._id) }}" style="text-decoration: none;">
+        <div class="card">
+            <div class="card-body d-flex flex-column flex-grow-1">
+                <div class="row mb-2" style="margin-left: 0px;">
+                    <div class="col-md-6 text-end" style="width: 32px; height: 32px; padding: 0 0;">
+                        <img class="avatar w-16 h-16" src="{{ url_for('image.getAvatar', username=card.user.username) }}" alt="{{ _words['user_avatar'] }}">
+                    </div>
+                    <div class="col-md-6 d-flex flex-column justify-content-center">
+                        <h6 class="card-subtitle text-muted">{{ card.user.username }}</h6>
+                    </div>
+                </div>
+                <h6 class="card-title">{{ card.title }}</h6>
+                <div class="mt-auto">
+                <p class="card-text text-muted small"><strong>{{ _words['created_at'] }}:</strong> {{ card.created_at }}</p>
+                {% for label in card.labels_ %}
+                    <span class="badge bg-gray" style="color: {{label.color}}; border: 1px solid {{label.color}};" data-bs-toggle="tooltip" title="{{ _words.get(label.name, label.name) }}">{{ label.icon | safe }} {{ label.count }}</span>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        </a>
+    </div>
+    {% endfor %}
+    {% if cards == [] %}
+    <p>{{ _words['no_results'] }}</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block footer %}
+
+<footer class="footer">
+    <div class="container d-flex justify-content-center align-items-center gap-2">
+        <nav aria-label="Page navigation">
+            <ul class="pagination mb-0">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1&limit={{ limit }}&sort={{ request.args.get('sort', 'year') }}&sort_order={{ request.args.get('sort_order', 'desc') }}{% for key in ['username', 'title', 'year'] %}{% if request.args.get(key) %}&{{ key }}={{ request.args.get(key) }}{% endif %}{% endfor %}" aria-label="First">
+                            <i class="fa fa-angle-double-left"></i> {{ _words['first'] }}
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page-1 }}&limit={{ limit }}&sort={{ request.args.get('sort', 'year') }}&sort_order={{ request.args.get('sort_order', 'desc') }}{% for key in ['username', 'title', 'year'] %}{% if request.args.get(key) %}&{{ key }}={{ request.args.get(key) }}{% endif %}{% endfor %}" aria-label="Previous">
+                            <i class="fa fa-angle-left"></i> {{ _words['previous'] }}
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <a class="page-link">{{ _words['page'] }} {{ page }} {{ _words['of'] }} {{ total_pages }}</a>
+                </li>
+
+                {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page+1 }}&limit={{ limit }}&sort={{ request.args.get('sort', 'year') }}&sort_order={{ request.args.get('sort_order', 'desc') }}{% for key in ['username', 'title', 'year'] %}{% if request.args.get(key) %}&{{ key }}={{ request.args.get(key) }}{% endif %}{% endfor %}" aria-label="Next">
+                            {{ _words['next'] }} <i class="fa fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ total_pages }}&limit={{ limit }}&sort={{ request.args.get('sort', 'year') }}&sort_order={{ request.args.get('sort_order', 'desc') }}{% for key in ['username', 'title', 'year'] %}{% if request.args.get(key) %}&{{ key }}={{ request.args.get(key) }}{% endif %}{% endfor %}" aria-label="Last">
+                            {{ _words['last'] }} <i class="fa fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <div class="sort-options d-flex align-items-center">
+            <span class="me-2">{{ _words['sort_by'] }}:</span>
+            {% set labels_ = [] %}
+            {% set label_icons = [] %}
+            {% set label_colors = [] %}
+            {% for item in labels %}
+                {% set _ = labels_.append(item.get('name', '')) %}
+                {% set _ = label_icons.append(item.get('icon', None)) %}
+                {% set _ = label_colors.append(item.get('color', None)) %}
+            {% endfor %}
+            {% for field in [_words['title'], _words['created_at']] + labels_ %}
+                {% set current_sort = request.args.get('sort', 'created_at') %}
+                {% set current_order = request.args.get('sort_order', 'desc') %}
+                {% set new_order = 'asc' if current_sort == field and current_order == 'desc' else 'desc' %}
+
+               <a href="?page={{ page }}&limit={{ limit }}&sort={{ field }}&sort_order={{ new_order }}{% for key in ['username', 'created_at'] %}{% if request.args.get(key) %}&{{ key }}={{ request.args.get(key) }}{% endif %}{% endfor %}"
+                   class="btn btn-outline-secondary btn-sm" style="border-color: {{(label_colors[loop.index0 - 2] if loop.index0 >= 2)}}" title="{{ _words.get(field, field) }}">
+                    <i class="fa
+                       {% if current_sort == field and current_order == 'asc' %}fa-sort-up{% else %}fa-sort-down{% endif %}"
+                       style="position: relative; {% if current_sort == field and current_order == 'asc' %}top: 2px;{% else %}top: -2px;{% endif %} color: {{(label_colors[loop.index0 - 2] if loop.index0 >= 2)}}">
+                    </i>
+                   <span class="ms-2">{{ (label_icons[loop.index0 - 2] if loop.index0 >= 2 else field) | safe }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</footer>
+
+<script>
+        function updateSorting(field) {
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentOrder = urlParams.get('sort_order') || 'desc';
+
+            // Toggle sorting order
+            let newOrder = (currentOrder === 'desc') ? 'asc' : 'desc';
+            urlParams.set('sort', field);
+            urlParams.set('sort_order', newOrder);
+
+            window.location.search = urlParams.toString();
+        }
+
+        function applyFilters() {
+            {% if redirect == 'web.factsView' %}
+            const username = document.getElementById('username').value;
+            {% else %}
+            const username = document.getElementById('author').value;
+            {% endif %}
+            const title = document.getElementById('title').value;
+            const year = document.getElementById('year').value;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (username) urlParams.set('username', username);
+            else urlParams.delete('username');
+
+            if (title) urlParams.set('title', title);
+            else urlParams.delete('title');
+
+            if (year) urlParams.set('year', year);
+            else urlParams.delete('year');
+
+            window.location.search = urlParams.toString();
+        }
+    </script>
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'index.html' %}
+
+{% block title %}Create Company{% endblock %}
+
+{% block content %}
+
+{% if authentication and AUTHENTICATED_ROLE in authentication.realm_access.roles %}
+
+<div class="form-container">
+    <form action="{{ url_for('database.createFact') }}" method="POST">
+        <div>
+            <h1 style="display: inline;">{{ _words['create_a_new'].replace('*', _words['fact'].title()) }}</h1>
+            <a href="{{ url_for('web.howTo') }}#how_to_fact" title="{{ _words['how_to_create'].replace('*', _words['fact']) }}" style="display: inline-block; color: black!important;"><h4><i class="fa-solid fa-circle-question"></i></h4></a>
+        </div>
+
+        <label for="title">{{ _words['title'] }}</label>
+        <textarea maxlength="513" id="title" name="title" required></textarea><br>
+
+        <label for="context">{{ _words['context'] }}</label>
+        <textarea id="context" maxlength="512" name="context" required></textarea><br>
+
+        <hr>
+
+        <!-- Search Source and Source Selection -->
+        <div class="form-group">
+            <label for="source_id">{{ _words['source'].title() }}</label>
+            <input type="text" id="searchSource" onkeyup="filterSources()" placeholder="{{ _words['search_source'] }}..." maxlength="512">
+            <select id="source_id" name="source_id" required onchange="updatePreview()">
+                <option value="">{{ _words['select_source'] }}</option>
+                {% for source in sources %}
+                    <option value="{{ source._id }}" data-author="{{ source.author }}" data-year="{{ source.year }}">
+                        ({{ source.author }}, {{ source.year }})
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Quote and Page Input -->
+        <div class="textarea-container mt-2">
+            <label for="quote">{{ _words['quote'] }}</label>
+            <i class="fa-solid fa-quote-left"></i>
+            <textarea id="quote" name="quote" maxlength="512" oninput="updatePreview()"></textarea>
+            <i class="fa-solid fa-quote-right"></i>
+
+            <div>
+                <label for="page">{{ _words['page'] }}</label>
+                <input type="number" id="page" name="page" class="small-input" required min="1" oninput="updatePreview()">
+            </div>
+        </div>
+
+        <!-- Preview -->
+        <div id="preview" style="padding:16px; margin-top:16px; margin-bottom: 16px; background-color: var(--bs-gray-200);">📖 <span id="previewText">---</span></div>
+
+        <input type="submit" value="{{ _words['create'].replace('*', _words['fact']) }}">
+    </form>
+</div>
+    <script>
+        function updatePreview() {
+            let sourceSelect = document.getElementById("source_id");
+            let selectedOption = sourceSelect.options[sourceSelect.selectedIndex];
+
+            let author = selectedOption.getAttribute("data-author") || "";
+            let year = selectedOption.getAttribute("data-year") || "";
+            let quote = document.getElementById("quote").value;
+            let page = document.getElementById("page").value;
+
+            let previewText = quote
+                ? `"${quote}" (${author}, ${year}, p. ${page})`
+                : "---";
+
+            document.getElementById("previewText").textContent = previewText;
+        }
+
+        function filterSources() {
+            let input = document.getElementById("searchSource");
+            let filter = input.value.toLowerCase();
+            let select = document.getElementById("source_id");
+            let options = select.getElementsByTagName("option");
+
+            for (let i = 1; i < options.length; i++) { // Start from 1 to skip the default option
+                let textValue = options[i].textContent || options[i].innerText;
+                if (textValue.toLowerCase().includes(filter)) {
+                    options[i].style.display = "block";
+                } else {
+                    options[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+
+{% else %}
+
+    <h1>{{ _words['you_are_not_authenticated'] }}</h1>
+
+{% endif %}
+
+{% endblock %}

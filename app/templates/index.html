@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ _words['default'] }} {{ _words['logo'] }}{% endblock %}</title>
+
+    <!-- Bootstrap for styling -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --bs-primary: {{ _primary_color }} !important;
+            --bs-primary-rgb:
+                {{ (_primary_color[1:] | int(base=16) // 65536) }},
+                {{ ((_primary_color[1:] | int(base=16) // 256) % 256) }},
+                {{ (_primary_color[1:] | int(base=16) % 256) }} !important;
+
+            --bs-link-color-rgb: {{ _primary_color }} !important;
+            --bs-gray-100: color-mix(in srgb, {{_primary_color}} 5%, var(--bs-white)) !important;
+            --bs-gray-200: color-mix(in srgb, {{_primary_color}} 10%, var(--bs-white)) !important;
+            --bs-gray-600: color-mix(in srgb, {{_primary_color}} 10%, var(--bs-gray-800)) !important;
+            --bs-gray-800: color-mix(in srgb, {{_primary_color}} 10%, var(--bs-gray-900)) !important;
+            --bs-light-rgb: color-mix(in srgb, {{_primary_color}} 80%, var(--bs-light-rgb)) !important;
+        }
+        a {
+            color: var(--bs-primary) !important;
+        }
+        a:hover {
+            color: color-mix(in srgb, {{ _primary_color }} 40%, var(--bs-gray-600)) !important; /* Slightly stronger color on hover */
+        }
+
+        /* Primary button */
+        .btn-primary {
+            background-color: var(--bs-primary) !important;
+            border-color: var(--bs-primary) !important;
+        }
+        .btn-primary:hover {
+            filter: brightness(90%);
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar collapsed" id="sidebar">
+        <ul>
+            <li style="transform: scale(1.5);"><a class="logo" href="/">Factee</a></li>
+            <li><a href="/facts">{{ _words['facts'] }}</a></li>
+            <li><a href="/facts/create">{{ _words['create_fact'] }}</a></li>
+            <li><a href="/sources">{{ _words['sources'] }}</a></li>
+            <li><a href="/sources/create">{{ _words['add_source'] }}</a></li>
+            <li><a href="/how">{{ _words['how_to'] }}</a></li>
+        </ul>
+        <ul class="bottom">
+            <li>
+                <select class="side-selection" id="language-selector" onchange="setLanguage(this.value)">
+                    <option value="en">English</option>
+                    <option value="ru">Русский</option>
+                    <option value="kz">Қазақ</option>
+                </select>
+            </li>
+            {% if _username %}
+            <li><a href="/logout">{{ _words['logout'] }}</a></li>
+            {% else %}
+            <li><a href="/login">{{ _words['login'] }}</a></li>
+            {% endif %}
+            <li><a href="/profile">{{_username if _username else _words['profile']}}</a></li>
+        </ul>
+    </div>
+
+    <!-- Toggle Button Container (Fixed and Vertical) -->
+    <div class="toggle-container collapsed" id="toggle-container">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <a href="/facts"><button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-lightbulb"></i></button></a>
+        <a href="/facts/create"><button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-plus"></i></button></a>
+
+        <a href="/sources"><button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-newspaper"></i></button></a>
+        <a href="/sources/create"><button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-file"></i></button></a>
+        <a href="/how"><button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-question"></i></button></a>
+    </div>
+
+    <!-- Toggle Button Container (Fixed and Vertical) -->
+    <div class="toggle-container-bottom collapsed" id="toggle-container2">
+        <button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-language"></i></button>
+        {% if _username %}
+            <a href="/logout"><button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-arrow-right-from-bracket"></i></button></a>
+            {% else %}
+            <a href="/login"><button class="toggle-btn toggle-btn-static"><i class="fa-solid fa-right-to-bracket"></i></button></a>
+            {% endif %}
+        <button class="toggle-btn toggle-btn-static"><a href="/profile"><img class="avatar" src="{{ url_for('image.getAvatar', username=_username) if _username else url_for('image.getAvatar', username='default') }}" alt="User Avatar"></a></button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content" id="content">
+        <h1>{{ _words['welcome'] }}</h1>
+        <p>{{ _words['thesis'] }}</p>
+        <hr>
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer>
+            {% block footer %}{% endblock %}
+            &copy; 2025 Tunaxx Dev, prof.mordvintsev@gmail.com
+        </footer>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            let sidebar = document.getElementById("sidebar");
+            let toggle_container = document.getElementById("toggle-container");
+            let toggle_container2 = document.getElementById("toggle-container2");
+
+            if (sidebar.classList.contains("collapsed")) {
+                sidebar.classList.remove("collapsed");
+                toggle_container.classList.remove("collapsed");
+                toggle_container2.classList.remove("collapsed");
+            } else {
+                sidebar.classList.add("collapsed");
+                toggle_container.classList.add("collapsed");
+                toggle_container2.classList.add("collapsed");
+            }
+        }
+
+        function setLanguage(lang) {
+            document.cookie = `lang=${lang}; path=/; max-age=31536000`; // Store for 1 year
+            location.reload(); // Reload to apply changes
+        }
+
+        (function() {
+            let match = document.cookie.match(/(?:^|;\s*)lang=([^;]+)/);
+            if (match) document.getElementById("language-selector").value = match[1];
+        })();
+    </script>
+</body>
+</html>

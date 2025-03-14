@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+
+{% block title %}{{ _words['logo'] }}: {{ _words['baked'] }}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="card source-card">
+        <div class="pt-4 mb-4">
+            <h1 class="p-4"><i class="fa-solid fa-triangle-exclamation me-2"></i>{{ _words['warning'] }}</h1>
+            <h3 class="p-4 m-0" style="background-color: var(--bs-danger-border-subtle)!important;">{{ _words['deleted_text'].replace('*', factOrSource) }}</h3>
+        </div>
+
+        <div class="bg-gray text-muted m-0 p-0">
+            <blockquote class="text-muted p-4">{{ baked }}</blockquote>
+        </div>
+
+        <button class="btn copy-btn p-4 m-0 mb-4 mt-4" onclick="copyToClipboard('{{ _host }}/{{ factOrSourceRoute }}?baked={{ baked }})', this)">
+            <span class="icon"><i class="fa-solid fa-copy"></i></span><p>Copy</p>
+        </button>
+    </div>
+    </div>
+</div>
+
+<!-- JavaScript for handling reactions -->
+<script>
+    function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(function() {
+                button.getElementsByTagName('p')[0].innerHTML = '{{ _words['copied'] }}';
+            }).catch(function(error) {
+                console.error("Copy failed", error);
+            });
+        }
+</script>
+
+{% endblock %}
