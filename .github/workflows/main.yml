@@ -1,0 +1,40 @@
+name: Deploy Flask App with MongoDB and Keycloak
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Copy project files to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            # Clone repo if it doesn't exist
+            if [ ! -d "flask-app" ]; then
+              git clone https://github.com/${{ github.repository }} flask-app
+            fi
+
+            cd flask-app
+            git pull origin main
+          EOF
+
+      - name: Restart Docker Compose
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd flask-app
+            docker compose down
+            docker compose up -d --build
+          EOF
+
