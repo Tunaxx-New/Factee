@@ -30,6 +30,13 @@ jobs:
             git pull origin main
           EOF
 
+      - name: Upload .env to server
+        run: |
+          echo "$ENV_FILE" > .env
+          scp .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/flask-app/.env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+
       - name: Restart Docker Compose
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
