@@ -14,19 +14,19 @@ services:
       - mongo-init
 
   mongo:
-    image: mongo
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
 
   mongo-init:
-    image: mongo
+    image: mongo:latest
     depends_on:
       - mongo
     volumes:
       - ./init:/docker-entrypoint-initdb.d
-    entrypoint: [ "mongo", "--host", "mongo", "/docker-entrypoint-initdb.d/init.js" ]
+    entrypoint: [ "mongosh", "--host", "mongo", "/docker-entrypoint-initdb.d/init.js" ]
 
 volumes:
   mongo-data:
