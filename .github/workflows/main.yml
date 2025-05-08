@@ -34,7 +34,8 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd flask-app
-            docker compose down
-            docker compose up -d --build
+            docker-compose down
+            docker-compose up -d --build
           EOF
+
 
