@@ -35,15 +35,45 @@ jobs:
 
       - name: Run Bandit scan
         run: |
-          bandit -r . -v -o bandit_output.json || true
+          bandit -r . -v -o bandit-report.json || true
 
       # Install dependencies
       - name: Install OWASP ZAP
         run: |
+          # Update package list
           sudo apt-get update
-          sudo apt-get install -y zaproxy
+          
+          # Download OWASP ZAP .deb package
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.1/ZAP_2.11.1_Ubuntu_18.04.deb
+          
+          # Install the downloaded .deb package
+          sudo dpkg -i ZAP_2.11.1_Ubuntu_18.04.deb
+          
+          # Install any missing dependencies
+          sudo apt-get install -f
 
       - name: Run OWASP ZAP scan
         run: |
           zap-baseline.py -t http://164.92.84.183:5000/ -g gen.conf -r zap_report.html || true
 
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.2
+
+# Upload Bandit Report as Artifact
+      - name: Upload Bandit Report as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-report
+          path: bandit_report.json
+
+      - name: Pytest
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest_report.json
+          path: pytest_report.json
+
+      - name: Owasp
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap_report.html
+          path: zap_report.html
