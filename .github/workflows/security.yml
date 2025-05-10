@@ -47,7 +47,10 @@ jobs:
       - name: Run OWASP ZAP Scan
         run: |
           docker pull zaproxy/zap-stable
-          docker run -u zap -v $(pwd):/zap/wrk/:rw zaproxy/zap-stable zap-baseline.py -t http://164.92.84.183:5000/ --report-format html --output zap_report.html
+          docker run --rm -v $(pwd):/zap/wrk/:rw \
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://164.92.84.183:5000/ \
+            -r zap_report.html
 
 # Upload Bandit Report as Artifact
       - name: Upload a Build Artifact
