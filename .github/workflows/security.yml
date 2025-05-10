@@ -47,7 +47,15 @@ jobs:
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker pull ghcr.io/zaproxy/zaproxy:stable
-          docker run --rm -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+
+      - name: Create report directory
+        run: mkdir zap_reports
+
+      - name: Run ZAP Baseline Scan
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/zap_reports:/zap/wrk/:rw \
+            -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://164.92.84.183:5000/ \
             -r zap_report.html || true
 
@@ -68,4 +76,4 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: zap_report.html
-          path: zap_report.html
+          path: zap_reports/zap_report.html
