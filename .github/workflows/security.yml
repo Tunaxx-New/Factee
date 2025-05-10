@@ -21,17 +21,13 @@ jobs:
         with:
           python-version: 3.9
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
       - name: Install Bandit
         run: |
           pip install bandit
 
       - name: Run Bandit scan
         run: |
-          bandit -r . -o bandit_output.json
+          bandit -r . -v -o bandit_output.json
 
       - name: Install OWASP ZAP
         run: |
