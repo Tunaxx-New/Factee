@@ -46,13 +46,13 @@ jobs:
           zap-baseline.py -t http://164.92.84.183:5000/ -g gen.conf -r zap_report.html
 
       - name: Upload Bandit report
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@3
         with:
           name: bandit-report
           path: bandit_output.json
 
       - name: Upload ZAP report
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@3
         with:
           name: zap-report
           path: zap_report.html
