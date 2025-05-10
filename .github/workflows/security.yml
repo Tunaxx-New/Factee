@@ -1,0 +1,58 @@
+name: Security SAST and DAST
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          pytest
+
+      - name: Install Bandit
+        run: |
+          pip install bandit
+
+      - name: Run Bandit scan
+        run: |
+          bandit -r . -o bandit_output.json
+
+      - name: Install OWASP ZAP
+        run: |
+          sudo apt-get install zaproxy
+
+      - name: Run OWASP ZAP scan
+        run: |
+          zap-baseline.py -t http://164.92.84.183:5000/ -g gen.conf -r zap_report.html
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@v3
+        with:
+          name: bandit-report
+          path: bandit_output.json
+
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: zap_report.html
