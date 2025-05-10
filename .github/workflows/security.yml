@@ -38,23 +38,11 @@ jobs:
           bandit -r . -v -o bandit-report.json || true
 
       # Install dependencies
-      - name: Install OWASP ZAP
+      # Run OWASP ZAP scan using Docker
+      - name: Run OWASP ZAP Scan
         run: |
-          # Update package list
-          sudo apt-get update
-          
-          # Download OWASP ZAP .deb package
-          wget https://github.com/zaproxy/zaproxy/releases/download/v2.11.1/ZAP_2.11.1_Ubuntu_18.04.deb
-          
-          # Install the downloaded .deb package
-          sudo dpkg -i ZAP_2.11.1_Ubuntu_18.04.deb
-          
-          # Install any missing dependencies
-          sudo apt-get install -f
-
-      - name: Run OWASP ZAP scan
-        run: |
-          zap-baseline.py -t http://164.92.84.183:5000/ -g gen.conf -r zap_report.html || true
+          docker pull owasp/zap2docker-stable
+          docker run -u zap -v $(pwd):/zap/wrk/:rw owasp/zap2docker-stable zap-baseline.py -t http://your-target-url --report-format html --output zap_report.html
 
 # Upload Bandit Report as Artifact
       - name: Upload a Build Artifact
