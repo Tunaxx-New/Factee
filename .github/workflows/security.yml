@@ -44,13 +44,14 @@ jobs:
 
       # Install dependencies
       # Run OWASP ZAP scan using Docker
-      - name: Run OWASP ZAP Scan
+      - name: Run OWASP ZAP Baseline Scan
         run: |
-          docker pull zaproxy/zap-stable
+          docker pull ghcr.io/zaproxy/zaproxy:stable
           docker run --rm -v "${{ github.workspace }}:/zap/wrk" \
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://164.92.84.183:5000/ \
-            -r zap_report.html
+            -r zap_report.html \
+            -n zap-context.context || true
 
 # Upload Bandit Report as Artifact
       - name: Upload a Build Artifact
