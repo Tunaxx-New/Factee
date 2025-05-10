@@ -56,24 +56,21 @@ jobs:
         run: |
           zap-baseline.py -t http://164.92.84.183:5000/ -g gen.conf -r zap_report.html || true
 
+# Upload Bandit Report as Artifact
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.6.2
-
-# Upload Bandit Report as Artifact
-      - name: Upload Bandit Report as Artifact
-        uses: actions/upload-artifact@v3
         with:
           name: bandit-report
           path: bandit_report.json
 
       - name: Pytest
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: pytest_report.json
           path: pytest_report.json
 
       - name: Owasp
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: zap_report.html
           path: zap_report.html
