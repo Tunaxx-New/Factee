@@ -37,11 +37,16 @@ jobs:
         run: |
           bandit -r . -v -o bandit-report.json || true
 
+      # Log in to Docker Hub (if authentication is needed)
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
       # Install dependencies
       # Run OWASP ZAP scan using Docker
       - name: Run OWASP ZAP Scan
         run: |
-          docker pull owasp/zap2docker
+          docker pull owasp/zap2docker-stable:latest
           docker run -u zap -v $(pwd):/zap/wrk/:rw owasp/zap2docker-stable zap-baseline.py -t http://your-target-url --report-format html --output zap_report.html
 
 # Upload Bandit Report as Artifact
