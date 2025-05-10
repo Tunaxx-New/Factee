@@ -41,7 +41,7 @@ jobs:
       # Run OWASP ZAP scan using Docker
       - name: Run OWASP ZAP Scan
         run: |
-          docker pull owasp/zap2docker-stable
+          docker pull owasp/zap2docker
           docker run -u zap -v $(pwd):/zap/wrk/:rw owasp/zap2docker-stable zap-baseline.py -t http://your-target-url --report-format html --output zap_report.html
 
 # Upload Bandit Report as Artifact
