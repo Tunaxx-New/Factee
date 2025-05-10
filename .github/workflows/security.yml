@@ -47,18 +47,14 @@ jobs:
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker pull ghcr.io/zaproxy/zaproxy:stable
-          docker run --rm -v "${{ github.workspace }}:/zap/wrk" \
-            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-            -t http://164.92.84.183:5000/ \
-            -r zap_report.html \
-            -n zap-context.context || true
+          docker run --rm -v $(pwd):/zap/wrk/:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://164.92.84.183:5000/ -r report_html
 
 # Upload Bandit Report as Artifact
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: bandit-report
-          path: bandit_report.json
+          name: bandit-report.json
+          path: bandit-report.json
 
       - name: Pytest
         uses: actions/upload-artifact@v4.6.2
