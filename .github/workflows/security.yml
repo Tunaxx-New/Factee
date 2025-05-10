@@ -48,16 +48,21 @@ jobs:
         run: |
           docker pull ghcr.io/zaproxy/zaproxy:stable
 
-      - name: Create report directory
-        run: mkdir zap_reports
+      - name: Prepare zap_reports directory
+        run: |
+          mkdir -p zap_reports
+          chmod -R 777 zap_reports
+
 
       - name: Run ZAP Baseline Scan
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/zap_reports:/zap/wrk/:rw \
+            --user 0 \
             -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://164.92.84.183:5000/ \
             -r zap_report.html || true
+
 
 # Upload Bandit Report as Artifact
       - name: Upload a Build Artifact
