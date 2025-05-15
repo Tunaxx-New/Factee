@@ -29,6 +29,12 @@ jobs:
             cd flask-app
             git pull origin main
           EOF
+  
+      - name: Upload .env to server
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            echo "${{ secrets.ENV_FILE }}" > ~/flask-app/.env
+          EOF
 
       - name: Build, tag, and deploy on remote server
         run: |
@@ -42,7 +48,6 @@ jobs:
       - name: Restart Docker Stack
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            echo "${{ secrets.ENV_FILE }}" > .env
             docker stack deploy -c swarm.yml flask-app
           EOF
 
