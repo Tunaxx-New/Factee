@@ -1,7 +1,7 @@
 words = {
     'en': {
         'logo': 'Factee',
-        'welcome': 'Welcome to the Factee',
+        'welcome': 'Welcome to the Factee Changed',
         'thesis': 'Reference someone. Prove your words. Mediate between source and fact',
         'fact': 'fact',
         'facts': 'Facts',
