@@ -21,6 +21,13 @@ deleted_user = {
 
 @web_bp.route('/', methods=['GET'])
 def home():
+    """
+    Home page
+    ---
+    responses:
+      200:
+        description: Render home page
+    """
     facts_count = DatabaseController.service.count_documents('facts', {})
     sources_count = DatabaseController.service.count_documents('sources', {})
     users = AuthenticationController.service.get_users()
@@ -38,6 +45,15 @@ def home():
 @web_bp.route('/facts/create', methods=['GET'])
 @Authenticated(required_roles=[AUTHENTICATED_ROLE])
 def createFactView(authentication: dict = None):
+    """
+    Fact form render
+    ---
+    tags:
+      - authenticated
+    responses:
+      200:
+        description: Render fact create page
+    """
     return render_template('create_fact.html',
                            authentication=authentication,
                            sources=DatabaseController.service.get_documents('sources', {}))
@@ -46,6 +62,15 @@ def createFactView(authentication: dict = None):
 @web_bp.route('/sources/create', methods=['GET'])
 @Authenticated(required_roles=[AUTHENTICATED_ROLE])
 def createSourceView(authentication: dict = None):
+    """
+    Source form render
+    ---
+    tags:
+      - authenticated
+    responses:
+      200:
+        description: Render source create page
+    """
     return render_template('create_source.html',
                            authentication=authentication,
                            types=DatabaseController.service.get_documents('types', {}))
@@ -120,6 +145,24 @@ def get_cards(collection: str, isSource=False):
 
 @web_bp.route('/sources', methods=['GET'])
 def sourcesView(_id: str = None):
+    """
+    Getting one source or many source cards
+    ---
+    parameters:
+      - name: _id
+        in: path
+        type: string
+        required: false
+        description: id of source
+      - name: baked
+        in: path
+        type: string
+        required: false
+        description: is source baked from link params
+    responses:
+      200:
+        description: Render one source page or many source cards
+    """
     _id = request.args.get('_id')
     baked = request.args.get('baked', '')
 
@@ -172,6 +215,24 @@ def sourcesView(_id: str = None):
 @web_bp.route('/facts', methods=['GET'])
 @Authenticated(required_roles=[], is_necessary=False)
 def factsView(authentication: dict = None):
+    """
+    Getting one fact or many fact cards
+    ---
+    parameters:
+      - name: _id
+        in: path
+        type: string
+        required: false
+        description: id of source
+      - name: baked
+        in: path
+        type: string
+        required: false
+        description: is fact baked from link params
+    responses:
+      200:
+        description: Render one fact page or many fact cards
+    """
     _id = request.args.get('_id', None)
     baked = request.args.get('baked', '')
 
@@ -239,6 +300,13 @@ def factsView(authentication: dict = None):
 
 @web_bp.route('/how', methods=['GET'])
 def howTo():
+    """
+    Render how to page
+    ---
+    responses:
+      200:
+        description: Render how to page
+    """
     language = request.cookies.get('lang', 'en')
     return render_template(f'baked/how_{language}.html',
                            labels=sorted(DatabaseController.service.get_documents('labels', {}), key=lambda x: x['order']),
@@ -247,12 +315,26 @@ def howTo():
 
 @web_bp.route('/redirect', methods=['GET'])
 def onRedirect():
+    """
+    Warning to redirect to external source
+    ---
+    responses:
+      200:
+        description: Render warning page to redirect
+    """
     redirect = request.args.get('redirect', request.referrer)
     return render_template(f'redirect.html', redirect=redirect)
 
 
 @web_bp.route('/pleaseSubscribe', methods=['GET'])
 def pleaseSubscribe():
+    """
+    Warning to subscribe for more functionality
+    ---
+    responses:
+      200:
+        description: Render warning page to subscribe
+    """
     text = request.args.get('text', '')
     return render_template('please_subscribe.html',
                            text=text)

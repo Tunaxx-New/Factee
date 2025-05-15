@@ -7,12 +7,14 @@ from flask_wtf import CSRFProtect
 
 from app import create_app, AUTHENTICATED_ROLE
 from app.language import words
+from flasgger import Swagger
 
 app = create_app()
 app.config["SECRET_KEY"] = os.getenv('SECRET')
 CORS(app, origins=[os.getenv('CORS_WEB')])
 csrf = CSRFProtect(app)
 csrf.init_app(app)
+swagger = Swagger(app)
 
 
 @app.template_filter('datetime_format')
@@ -24,6 +26,7 @@ def datetime_format(value):
 @app.context_processor
 def inject_primary_color():
     """Inject primary_color from cookies into all templates."""
+    print(f"Words data: {words.get(request.cookies.get('lang', 'en'), words.get('en'))}")
     return {
         "_primary_color": request.cookies.get('primary_color', '#000000'),
         "_username": request.cookies.get('username', None),
@@ -42,15 +45,16 @@ def generate_nonce():
 
 @app.after_request
 def add_security_headers(response):
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers['Content-Security-Policy'] = f"default-src 'self'; " \
-                                                  f"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;" \
-                                                  f"style-src 'nonce-{g.get('nonce', None)}';" \
-                                                  f"script-src 'self' 'nonce-{g.get('nonce', None)}' https://cdn.jsdelivr.net;" \
-                                                  f"font-src 'self' https://cdnjs.cloudflare.com data:;" \
-                                                  f"img-src 'self' https://cdnjs.cloudflare.com data: https://*.patreonusercontent.com/;" \
-                                                  f"frame-ancestors 'self' https://cdnjs.cloudflare.com;" \
-                                                  f"form-action 'self';"
+    if not app.debug:
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers['Content-Security-Policy'] = f"default-src 'self'; " \
+                                                      f"style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;" \
+                                                      f"style-src 'nonce-{g.get('nonce', None)}';" \
+                                                      f"script-src 'self' 'nonce-{g.get('nonce', None)}' https://cdn.jsdelivr.net;" \
+                                                      f"font-src 'self' https://cdnjs.cloudflare.com data:;" \
+                                                      f"img-src 'self' https://cdnjs.cloudflare.com data: https://*.patreonusercontent.com/;" \
+                                                      f"frame-ancestors 'self' https://cdnjs.cloudflare.com;" \
+                                                      f"form-action 'self';"
     return response
 
 
@@ -65,4 +69,4 @@ if __name__ == "__main__":
     else:
         context = None  # Run without SSL
 
-    app.run(host=host, port=port, ssl_context=context)
+    app.run(host=host, port=port, ssl_context=context, debug=os.getenv('IS_DEBUG', 0))
