@@ -22,6 +22,45 @@ class DatabaseController(Singleton):
     @Authenticated(required_roles=[AUTHENTICATED_ROLE])
     @RequiredParams()
     def createFact(title: str, context: str, page: int, quote: str, source_id: str, authentication: dict = None):
+        """
+        Creating fact form
+        ---
+        tags:
+          - authenticated
+        parameters:
+          - name: title
+            in: path
+            type: string
+            required: true
+            description: title of fact
+          - name: context
+            in: path
+            type: string
+            required: true
+            description: context of fact
+          - name: page
+            in: path
+            type: int
+            required: true
+            description: fact quote page
+          - name: quote
+            in: path
+            type: string
+            required: true
+            description: quote of fact
+          - name: source_id
+            in: path
+            type: string
+            required: true
+            description: Source ObjectID string
+        responses:
+          200:
+            description: Render fact page
+          422:
+            description: Some field is too long, data validation error
+          403:
+            description: Existing fact occurs
+        """
         user_id = authentication.get('sub')
 
         from run import csrf  # Import here to avoid circular import
@@ -62,6 +101,23 @@ class DatabaseController(Singleton):
     @Authenticated(required_roles=[AUTHENTICATED_ROLE])
     @RequiredParams()
     def deleteFact(fact_id: str, authentication: dict = None):
+        """
+        Deleting user fact by coressponding user
+        ---
+        tags:
+          - authenticated
+        parameters:
+          - name: fact_id
+            in: path
+            type: string
+            required: true
+            description: Fact ObjectID string
+        responses:
+          200:
+            description: redirect to referrer
+          422:
+            description: wrong data of fact (not exists, wrong user_id)
+        """
         from run import csrf  # Import here to avoid circular import
         csrf.protect()
 
@@ -84,6 +140,45 @@ class DatabaseController(Singleton):
     @Authenticated(required_roles=[AUTHENTICATED_ROLE])
     @RequiredParams()
     def createSource(title: str, author: str, year: int, _type_id: str, link: str, authentication: dict = None):
+        """
+        Creating source form
+        ---
+        tags:
+          - authenticated
+        parameters:
+          - name: title
+            in: path
+            type: string
+            required: true
+            description: title of source
+          - name: author
+            in: path
+            type: string
+            required: true
+            description: author of source
+          - name: year
+            in: path
+            type: int
+            required: true
+            description: year of source
+          - name: _type_id
+            in: path
+            type: string
+            required: true
+            description: Type ObjectID string
+          - name: link
+            in: path
+            type: string
+            required: true
+            description: link to source
+        responses:
+          200:
+            description: Render source page
+          422:
+            description: Some field is too long, data validation error
+          403:
+            description: Existing fact occurs or max record count
+        """
         from run import csrf  # Import here to avoid circular import
         csrf.protect()
 
@@ -111,6 +206,33 @@ class DatabaseController(Singleton):
     @Authenticated(required_roles=[AUTHENTICATED_ROLE])
     @RequiredParams()
     def react(authentication: dict = None):
+        """
+        Reacting to source or fact. Pass parameters in json
+        ---
+        tags:
+          - authenticated
+        parameters:
+          - name: _id
+            in: path
+            type: string
+            required: true
+            description: _id of fact or source
+          - name: _collection
+            in: path
+            type: string
+            required: true
+            description: Collection name - facts or sources
+          - name: _label
+            in: path
+            type: string
+            required: true
+            description: label id to react
+        responses:
+          200:
+            description: response of database service react method
+          400:
+            description: invalid json of reacting or label
+        """
         from run import csrf  # Import here to avoid circular import
         csrf.protect()
 

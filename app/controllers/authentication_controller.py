@@ -21,6 +21,29 @@ class AuthenticationController(Singleton):
     @blueprint.route('/login', methods=['GET', 'POST'])
     @RequiredParams()
     def login(source_redirect: str = None):
+        """
+        Login get web and post authentication
+        ---
+        parameters:
+          - name: source_redirect
+            in: path
+            type: string
+            required: false
+            description: Source redirect to 302 requests
+          - name: username
+            in: path
+            type: string
+            required: false
+            description: username
+          - name: password
+            in: path
+            type: string
+            required: false
+            description: password
+        responses:
+          200:
+            description: redirecting to authentication service or rendered page
+        """
         if request.method == 'POST':
             username = request.form['username']
             password = request.form['password']
@@ -41,6 +64,13 @@ class AuthenticationController(Singleton):
     @staticmethod
     @blueprint.route('/callback', methods=['GET'])
     def callback():
+        """
+        Callback get to redirect from authentication service, saves token, saves cookies
+        ---
+        responses:
+          200:
+            description: redirecting to saved source_redirect in session
+        """
         if request.args.get('error'):
             return jsonify(error=request.args.get('error'), description=request.args.get('error_description'))
 
@@ -67,7 +97,15 @@ class AuthenticationController(Singleton):
     @blueprint.route('/logout', methods=['GET'])
     @Authenticated(required_roles=[], is_necessary=False)
     def logout(authentication):
-        """Log out the user by clearing the session and cookies."""
+        """
+        Log out the user by clearing the session and cookies.
+        ---
+        tags:
+          - authenticated
+        responses:
+          200:
+            description: render some referrer page and clears cookies with session
+        """
 
         # Clear session data
         session.clear()
@@ -97,6 +135,13 @@ class AuthenticationController(Singleton):
     @staticmethod
     @blueprint.route('/register', methods=['GET'])
     def register():
+        """
+        Register redirect page
+        ---
+        responses:
+          200:
+            description: redirecting to service authentication register page
+        """
         return redirect(AuthenticationController.service.redirect_register())
 
     @staticmethod
@@ -125,6 +170,23 @@ class AuthenticationController(Singleton):
     @blueprint.route('/profile')
     @Authenticated(required_roles=[AUTHENTICATED_ROLE])
     def profile(authentication):
+        """
+        Getting current user data and collecting into profile
+        ---
+        tags:
+          - authenticated
+        parameters:
+          - name: _id
+            in: path
+            type: string
+            required: false
+            description: Patreon _id
+        responses:
+          200:
+            description: renders current user profile
+          400:
+            description: User not found and not logged in
+        """
         user = AuthenticationController.service.get_public_info_by_username(authentication.get('username', '')) or []
         patreon = request.args.get('_id', None)
         if not patreon:
@@ -149,13 +211,28 @@ class AuthenticationController(Singleton):
                                                _primary_color=prefer_type.get('color', '#000000'),
                                                prefer_type=prefer_type,
                                                redirect_manage_profile=AuthenticationController.service.redirect_profile_manage(),
-                                                patreon=patreon))
+                                               patreon=patreon))
         response.set_cookie('primary_color', prefer_type.get('color', '#000000'), httponly=True, secure=True, samesite='Lax')
         return response
 
     @staticmethod
     @blueprint.route('/profile/<username>')
     def public_profile(username):
+        """
+        Getting user data and collecting into profile
+        ---
+        parameters:
+          - name: username
+            in: path
+            type: string
+            required: true
+            description: User name
+        responses:
+          200:
+            description: renders user profile
+          400:
+            description: user with id not found
+        """
         user = AuthenticationController.service.get_public_info_by_username(username) or []
         if len(user) <= 0:
             user = {}
