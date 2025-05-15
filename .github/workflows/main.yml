@@ -48,6 +48,7 @@ jobs:
       - name: Restart Docker Stack
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd flask-app
             docker stack deploy -c swarm.yml flask-app
           EOF
 
