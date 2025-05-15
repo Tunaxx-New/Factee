@@ -37,12 +37,11 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
 
-      - name: Restart Docker Compose
+      - name: Restart Docker Stack
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd flask-app
-            docker-compose down
-            docker-compose up -d --build
+            docker stack deploy -c swarm.yml flask-app
           EOF
 
 
