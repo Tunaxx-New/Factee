@@ -30,13 +30,6 @@ jobs:
             git pull origin main
           EOF
 
-      - name: Upload .env to server
-        run: |
-          echo "$ENV_FILE" > .env
-          scp .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/flask-app/.env
-        env:
-          ENV_FILE: ${{ secrets.ENV_FILE }}
-
       - name: Build, tag, and deploy on remote server
         run: |
             # Build Docker image
@@ -45,6 +38,13 @@ jobs:
             # Optional: Push to Docker Hub
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             docker push tunaxx/flask-app:latest
+
+      - name: Upload .env to server
+        run: |
+          echo "$ENV_FILE" > .env
+          scp .env ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/flask-app/.env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
 
       - name: Restart Docker Stack
         run: |
