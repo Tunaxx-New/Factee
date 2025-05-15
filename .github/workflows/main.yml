@@ -37,10 +37,18 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
 
+      - name: Build, tag, and deploy on remote server
+        run: |
+            # Build Docker image
+            docker build -t tunaxx/flask-app:latest .
+
+            # Optional: Push to Docker Hub
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+            docker push tunaxx/flask-app:latest
+
       - name: Restart Docker Stack
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            cd flask-app
             docker stack deploy -c swarm.yml flask-app
           EOF
 
